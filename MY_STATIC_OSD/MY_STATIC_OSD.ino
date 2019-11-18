@@ -69,12 +69,12 @@ void setup()
   delay(100);			     			    		    
 
   OSD_Clear();
-  if (enabletext == HIGH)
-  {
+  //if (enabletext == HIGH)
+  //{
   // Text, X position, Y position, Blink Text, Invert Text
-  OSD_write_to_screen("M5SJM - Stephen", 2, 1, 0, 0);
+  OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
   OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
-  }
+  //}
   // Use the MAX7456Charwizard.JAR character viewer & editor to edit the hex values in the below subroutine!
   if (callswitch == HIGH)
   {
