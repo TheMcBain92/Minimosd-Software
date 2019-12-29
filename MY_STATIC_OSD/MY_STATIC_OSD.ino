@@ -15,7 +15,10 @@
 #define MAX7456SELECT 		6         // SS 
 #define MAX7456RESET 		10 
 #define enabletext  9  // switch for enabling text 
-#define callswitch	7	// switch for enabling large callsign
+/*#define callswitch	3	// switch for enabling large callsign*/
+int callswitch = A3;
+int swpos = 0;
+int swpre = 1;
 #define portable  8 // switch for enabling /p 
 
 //--------------------------------------------------------------------------------------------
@@ -26,7 +29,7 @@ void setup()
   int i;
 
   pinMode(enabletext,INPUT);
-  pinMode(callswitch,INPUT);
+  pinMode(A3,INPUT);
   pinMode(portable,INPUT);
   
   pinMode(MAX7456RESET,OUTPUT);
@@ -68,25 +71,53 @@ void setup()
   digitalWrite(MAX7456SELECT,HIGH);
   delay(100);			     			    		    
 
-  OSD_Clear();
+  //OSD_Clear();
   //if (enabletext == HIGH)
   //{
   // Text, X position, Y position, Blink Text, Invert Text
-  OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
-  OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
+  //OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
+  //OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
   //}
   // Use the MAX7456Charwizard.JAR character viewer & editor to edit the hex values in the below subroutine!
-  if (callswitch == HIGH)
-  {
-	Callsign(); // Write out message for non ASCII Characters 
-  } 		  
+		  
 }  
   
 //-------------------------------------------------------------------------------------------- ASCII Table Conversion
 
 void Max7456()
 {
+  if (analogRead(A3) > 0)
+  {
+    swpos = 1;
+  }
+  else
+  {
+    swpos = 0;
+  }
+  
+  if (swpos == swpre)
+    {
+    }
+    else
+    {
+      if (swpos == 1)
+      {
+        OSD_Clear();
+        OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
+        OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
+        Callsign(); // Write out message for non ASCII Characters
+        swpre = 1;
+      }
+      else
+      {
+        OSD_Clear();
+        OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
+        OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
+        swpre = 0;
+      }
+    }
 
+  
 spi_transfer(VM0_reg);
 spi_transfer(VERTICAL_SYNC_NEXT_VSYNC|OSD_ENABLE|SYNC_MODE_AUTO);
 digitalWrite(MAX7456SELECT,HIGH); 
