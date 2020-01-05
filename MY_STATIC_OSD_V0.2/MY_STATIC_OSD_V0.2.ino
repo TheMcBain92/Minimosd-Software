@@ -16,9 +16,12 @@
 #define MAX7456RESET 		10 
 #define enabletext  9  // switch for enabling text 
 /*#define callswitch	3	// switch for enabling large callsign*/
-int callswitch = A3;
+int callswitch = A2;
+int texton = A3;
 int swpos = 0;
 int swpre = 1;
+int swtxtpos = 0;
+int swtxtpre = 1;
 #define portable  8 // switch for enabling /p 
 
 //--------------------------------------------------------------------------------------------
@@ -86,7 +89,36 @@ void setup()
 
 void Max7456()
 {
-  if (analogRead(A3) > 0)
+  if (analogRead(texton) > 0)
+  {
+    swtxtpos = 1;
+  }
+  else
+  {
+    swtxtpos = 0;
+  }
+  
+  if (swtxtpos == swtxtpre)
+    {
+    }
+    else
+    {
+      if (swtxtpos == 1)
+      {
+        OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
+        OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
+        swtxtpre = 1;
+      }
+      else
+      {
+        OSD_write_to_screen("                        ", 2, 1, 0, 0);
+        OSD_write_to_screen("                      ", 2, 2, 0, 0);
+        swtxtpre = 0;
+      }
+    } 
+   
+  
+  if (analogRead(callswitch) > 0)
   {
     swpos = 1;
   }
@@ -102,22 +134,32 @@ void Max7456()
     {
       if (swpos == 1)
       {
-        OSD_Clear();
-        OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
-        OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
         Callsign(); // Write out message for non ASCII Characters
         swpre = 1;
       }
       else
       {
-        OSD_Clear();
-        OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
-        OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
+        OSD_write_to_screen("                        ",1,3,0,0);
+        OSD_write_to_screen("                        ",2,3,0,0);
+        OSD_write_to_screen("                        ",3,3,0,0);
+        OSD_write_to_screen("                        ",4,3,0,0);
+        OSD_write_to_screen("                        ",1,4,0,0);
+        OSD_write_to_screen("                        ",2,4,0,0);
+        OSD_write_to_screen("                        ",3,4,0,0);
+        OSD_write_to_screen("                        ",4,4,0,0);
+        OSD_write_to_screen("                        ",1,5,0,0);
+        OSD_write_to_screen("                        ",2,5,0,0);
+        OSD_write_to_screen("                        ",3,5,0,0);
+        OSD_write_to_screen("                        ",4,5,0,0);
+        OSD_write_to_screen("                        ",1,6,0,0);
+        OSD_write_to_screen("                        ",2,6,0,0);
+        OSD_write_to_screen("                        ",3,6,0,0);
+        OSD_write_to_screen("                        ",4,6,0,0);
         swpre = 0;
       }
     }
-
   
+
 spi_transfer(VM0_reg);
 spi_transfer(VERTICAL_SYNC_NEXT_VSYNC|OSD_ENABLE|SYNC_MODE_AUTO);
 digitalWrite(MAX7456SELECT,HIGH); 
