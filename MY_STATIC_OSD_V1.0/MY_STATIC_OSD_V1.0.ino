@@ -20,6 +20,8 @@ int textshown = 1;
 //Edit the below lines to change text times 1 and 2
 const char *line1 = "callsign - name - locator";
 const char *line2 = "2m TalkBack 144.750MHz";
+int largecall = 1;
+int sixdigitcall = 0;
 int callshowtime = 10000;
 
 //--------------------------------------------------------------------------------------------
@@ -80,16 +82,20 @@ void Max7456()
     OSD_write_to_screen(line2, 2, 2, 0, 0);
     textshown = 1;
   }
-  if(callshow == 0)
+  if(largecall == 1)
   {
-    OSD_Clear();
-    OSD_write_to_screen(line1, 2, 1, 0, 0);
-    OSD_write_to_screen(line2, 2, 2, 0, 0);
-    Callsign(); // Write out message for non ASCII Characters
-    callshow = 1;
-    textshown = 0;
+    if(callshow == 0)
+    {
+      OSD_Clear();
+      OSD_write_to_screen(line1, 2, 1, 0, 0);
+      OSD_write_to_screen(line2, 2, 2, 0, 0);
+      Callsign(); // Write out message for non ASCII Characters
+      callshow = 1;
+      textshown = 0;
+    }
+  } else {
+   textshown = 0;
   }
-  
   spi_transfer(VM0_reg);
   spi_transfer(VERTICAL_SYNC_NEXT_VSYNC|OSD_ENABLE|SYNC_MODE_AUTO);
   digitalWrite(MAX7456SELECT,HIGH); 
@@ -313,7 +319,7 @@ byte spi_transfer(volatile byte data)
 
 void Callsign()
 {
-  //M
+  //1st digit
    printMax7456Char(0x78,1,3,0,0);      // 2L1
    printMax7456Char(0x79,2,3,0,0);      // 2L1
    printMax7456Char(0x7A,3,3,0,0);      // 2L1
@@ -334,7 +340,7 @@ void Callsign()
    printMax7456Char(0xAA,3,6,0,0);      // 2L4
    printMax7456Char(0xAB,4,6,0,0);      // 2L4
 
-   //5
+   //2nd digit
    printMax7456Char(0x7C,6,3,0,0);      // EL1
    printMax7456Char(0x7D,7,3,0,0);      // EL1
    printMax7456Char(0x7E,8,3,0,0);      // EL1
@@ -355,7 +361,7 @@ void Callsign()
    printMax7456Char(0xAE,8,6,0,0);      // EL4
    printMax7456Char(0xAF,9,6,0,0);     // EL4
 
-   //S
+   //3rd digit
    printMax7456Char(0xB0,11,3,0,0);     // 0L1
    printMax7456Char(0xB1,12,3,0,0);     // 0L1
    printMax7456Char(0xB2,13,3,0,0);     // 0L1
@@ -376,7 +382,7 @@ void Callsign()
    printMax7456Char(0xE2,13,6,0,0);     // 0L4
    printMax7456Char(0xE3,14,6,0,0);     // 0L4
 
-   //J
+   //4th digit
    printMax7456Char(0xB4,16,3,0,0);     // SL1
    printMax7456Char(0xB5,17,3,0,0);     // SL1
    printMax7456Char(0xB6,18,3,0,0);     // SL1
@@ -397,27 +403,49 @@ void Callsign()
    printMax7456Char(0xE6,18,6,0,0);     // SL4
    printMax7456Char(0xE7,19,6,0,0);     // SL4
 
+  //5th digit
+   printMax7456Char(0xB8,21,3,0,0);      // 2L1
+   printMax7456Char(0xB9,22,3,0,0);      // 2L1
+   printMax7456Char(0xBA,23,3,0,0);      // 2L1
+   printMax7456Char(0xBB,24,3,0,0);      // 2L1
+   
+   printMax7456Char(0xC8,21,4,0,0);      // 2L2
+   printMax7456Char(0xC9,22,4,0,0);      // 2L2
+   printMax7456Char(0xCA,23,4,0,0);      // 2L2
+   printMax7456Char(0xCB,24,4,0,0);      // 2L2
+   
+   printMax7456Char(0xD8,21,5,0,0);      // 2L3
+   printMax7456Char(0xD9,22,5,0,0);      // 2L3
+   printMax7456Char(0xDA,23,5,0,0);      // 2L3
+   printMax7456Char(0xDB,24,5,0,0);      // 2L3
+   
+   printMax7456Char(0xE8,21,6,0,0);      // 2L4
+   printMax7456Char(0xE9,22,6,0,0);      // 2L4
+   printMax7456Char(0xEA,23,6,0,0);      // 2L4
+   printMax7456Char(0xEB,24,6,0,0);      // 2L4
 
-  //M
-   printMax7456Char(0x78,21,3,0,0);      // 2L1
-   printMax7456Char(0x79,22,3,0,0);      // 2L1
-   printMax7456Char(0x7A,23,3,0,0);      // 2L1
-   printMax7456Char(0x7B,24,3,0,0);      // 2L1
+  // 6th digit
+   if (sixdigitcall == 1){
+   printMax7456Char(0xBC,26,3,0,0);     // ML1
+   printMax7456Char(0xBD,27,3,0,0);     // ML1
+   printMax7456Char(0xBE,28,3,0,0);     // ML1
+   printMax7456Char(0xBF,29,3,0,0);     // ML1
    
-   printMax7456Char(0x88,21,4,0,0);      // 2L2
-   printMax7456Char(0x89,22,4,0,0);      // 2L2
-   printMax7456Char(0x8A,23,4,0,0);      // 2L2
-   printMax7456Char(0x8B,24,4,0,0);      // 2L2
+   printMax7456Char(0xCC,26,4,0,0);     // ML2
+   printMax7456Char(0xCD,27,4,0,0);     // ML2
+   printMax7456Char(0xCE,28,4,0,0);     // ML2
+   printMax7456Char(0xCF,29,4,0,0);     // ML2
    
-   printMax7456Char(0x98,21,5,0,0);      // 2L3
-   printMax7456Char(0x99,22,5,0,0);      // 2L3
-   printMax7456Char(0x9A,23,5,0,0);      // 2L3
-   printMax7456Char(0x9B,24,5,0,0);      // 2L3
+   printMax7456Char(0xDC,26,5,0,0);     // ML3
+   printMax7456Char(0xDD,27,5,0,0);     // ML3
+   printMax7456Char(0xDE,28,5,0,0);     // ML3
+   printMax7456Char(0xDF,29,5,0,0);     // ML3
    
-   printMax7456Char(0xA8,21,6,0,0);      // 2L4
-   printMax7456Char(0xA9,22,6,0,0);      // 2L4
-   printMax7456Char(0xAA,23,6,0,0);      // 2L4
-   printMax7456Char(0xAB,24,6,0,0);      // 2L4
+   printMax7456Char(0xEC,26,6,0,0);     // ML4
+   printMax7456Char(0xED,27,6,0,0);     // ML4
+   printMax7456Char(0xEE,28,6,0,0);     // ML4
+   printMax7456Char(0xEF,29,6,0,0);     // ML4
+   }
 }
 
 //--------------------------------------------------------------------------------------------
