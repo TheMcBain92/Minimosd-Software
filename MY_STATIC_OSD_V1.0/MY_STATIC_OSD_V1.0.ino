@@ -1,9 +1,9 @@
 /*
-  Program : MY_STATIC_OSD.INO
-  Version : 1.00
-  Date    : 3rd Feb 2018
-  Purpose : Simple caption test for OSD modifications as per CQ-DATV Ed.12
-
+  Program     : MY_STATIC_OSD.INO
+  Version     : V1.0
+  Date        : 12th Jan 2020
+  Creator     : Stephen McBain M5SJM
+  Description : This code will add simple text as an overlay using the minimOSD module or MAX7456OSD Module. Based on the sketch in CQ-DATV ed.12.  
 */
 
 #include "MAX7456OSD.H"                   // Register names for MAX7456 device
@@ -13,14 +13,14 @@
 #define DATAIN 			12	  // MISO
 #define SPICLOCK 		13	  // SCK
 #define MAX7456SELECT 		6         // SS 
-#define MAX7456RESET 		10 
-#define enabletext  9  // switch for enabling text 
-/*#define callswitch	3	// switch for enabling large callsign*/
-int callswitch = A3;
-int texton = A2;
-int swpos = 0;
-int swpre = 1;
-#define portable  8 // switch for enabling /p 
+#define MAX7456RESET 		10
+int callshow = 0;
+int textshown = 1;
+
+//Edit the below lines to change text times 1 and 2
+const char *line1 = "callsign - name - locator";
+const char *line2 = "2m TalkBack 144.750MHz";
+int callshowtime = 10000;
 
 //--------------------------------------------------------------------------------------------
 void setup()
@@ -28,10 +28,6 @@ void setup()
   byte spi_junk;                        
   int x;
   int i;
-
-  pinMode(enabletext,INPUT);
-  pinMode(A3,INPUT);
-  pinMode(portable,INPUT);
   
   pinMode(MAX7456RESET,OUTPUT);
   digitalWrite(MAX7456RESET,HIGH); 
@@ -70,64 +66,33 @@ void setup()
   spi_transfer(VM0_reg);
   spi_transfer(VERTICAL_SYNC_NEXT_VSYNC|OSD_ENABLE|VIDEO_MODE_PAL);	    	   
   digitalWrite(MAX7456SELECT,HIGH);
-  delay(100);			     			    		    
-
-  //OSD_Clear();
-  //if (enabletext == HIGH)
-  //{
-  // Text, X position, Y position, Blink Text, Invert Text
-  //OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
-  //OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
-  //}
-  // Use the MAX7456Charwizard.JAR character viewer & editor to edit the hex values in the below subroutine!
-		  
+  delay(100);			     			    		    		  
 }  
   
 //-------------------------------------------------------------------------------------------- ASCII Table Conversion
 
 void Max7456()
 {
-  if (analogRead(texton) > 0 )
+  if(textshown == 0)
   {
-    if (analogRead(callswitch) > 0)
-    {
-      swpos = 1;
-    }
-    else
-    {
-      swpos = 0;
-    }
-  
-    if (swpos == swpre)
-      {
-      }
-      else
-      {
-        if (swpos == 1)
-        {
-          OSD_Clear();
-          OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
-          OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
-          Callsign(); // Write out message for non ASCII Characters
-          swpre = 1;
-        }
-        else
-        {
-          OSD_Clear();
-          OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
-          OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
-          swpre = 0;
-        }
-      }
-    }
-    else
-    {
     OSD_Clear();
-    }
-    
-spi_transfer(VM0_reg);
-spi_transfer(VERTICAL_SYNC_NEXT_VSYNC|OSD_ENABLE|SYNC_MODE_AUTO);
-digitalWrite(MAX7456SELECT,HIGH); 
+    OSD_write_to_screen(line1, 2, 1, 0, 0);
+    OSD_write_to_screen(line2, 2, 2, 0, 0);
+    textshown = 1;
+  }
+  if(callshow == 0)
+  {
+    OSD_Clear();
+    OSD_write_to_screen(line1, 2, 1, 0, 0);
+    OSD_write_to_screen(line2, 2, 2, 0, 0);
+    Callsign(); // Write out message for non ASCII Characters
+    callshow = 1;
+    textshown = 0;
+  }
+  
+  spi_transfer(VM0_reg);
+  spi_transfer(VERTICAL_SYNC_NEXT_VSYNC|OSD_ENABLE|SYNC_MODE_AUTO);
+  digitalWrite(MAX7456SELECT,HIGH); 
 }
 byte convert_ascii (int character)
 {
@@ -453,33 +418,11 @@ void Callsign()
    printMax7456Char(0xA9,22,6,0,0);      // 2L4
    printMax7456Char(0xAA,23,6,0,0);      // 2L4
    printMax7456Char(0xAB,24,6,0,0);      // 2L4
-
-// /P
-if (portable == HIGH){
-   printMax7456Char(0xBC,26,3,0,0);     // ML1
-   printMax7456Char(0xBD,27,3,0,0);     // ML1
-   printMax7456Char(0xBE,28,3,0,0);     // ML1
-   printMax7456Char(0xBF,29,3,0,0);     // ML1
-   
-   printMax7456Char(0xCC,26,4,0,0);     // ML2
-   printMax7456Char(0xCD,27,4,0,0);     // ML2
-   printMax7456Char(0xCE,28,4,0,0);     // ML2
-   printMax7456Char(0xCF,29,4,0,0);     // ML2
-   
-   printMax7456Char(0xDC,26,5,0,0);     // ML3
-   printMax7456Char(0xDD,27,5,0,0);     // ML3
-   printMax7456Char(0xDE,28,5,0,0);     // ML3
-   printMax7456Char(0xDF,29,5,0,0);     // ML3
-   
-   printMax7456Char(0xEC,26,6,0,0);     // ML4
-   printMax7456Char(0xED,27,6,0,0);     // ML4
-   printMax7456Char(0xEE,28,6,0,0);     // ML4
-   printMax7456Char(0xEF,29,6,0,0);     // ML4
-   }
 }
 
 //--------------------------------------------------------------------------------------------
 void loop()
 {
    Max7456();
+   delay(callshowtime);
 }
