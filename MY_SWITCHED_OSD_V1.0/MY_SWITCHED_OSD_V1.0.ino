@@ -105,7 +105,7 @@ void Max7456()
     {
       if (swtxtpos == 1)
       {
-        OSD_write_to_screen("M5SJM - Stephen - IO93RF", 2, 1, 0, 0);
+        OSD_write_to_screen("M5SJM - Stephen - IO93SF", 2, 1, 0, 0);
         OSD_write_to_screen("2m TalkBack 144.750MHz", 2, 2, 0, 0);
         swtxtpre = 1;
       }
